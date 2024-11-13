@@ -1,0 +1,88 @@
+city-rating.component.ts
+
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { CityRatingComponent } from './city-rating.component';
+
+describe('CityRatingComponent', () => {
+  let component: CityRatingComponent;
+  let fixture: ComponentFixture<CityRatingComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [CityRatingComponent]
+    })
+    .compileComponents();
+
+    fixture = TestBed.createComponent(CityRatingComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
+
+
+_____________________________________________________________________________
+
+city-rating.component.html
+
+
+<div class="crop" [title]="rating">
+    <div>
+      <!-- Loop through the stars and apply gold color to clicked stars -->
+      <fa-icon 
+        [icon]="faStar" 
+        *ngFor="let star of stars; let i = index"
+        [ngClass]="{'gold-star': i < rating}" 
+        (click)="onClick(i + 1)" 
+        class="star">
+      </fa-icon>
+    </div>
+  </div>
+  
+____________________________________________________________________________
+
+
+city-rating.component.css
+
+
+.crop{
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+div{
+    cursor: pointer;
+}
+
+.star {
+    cursor: pointer;
+    font-size: 24px;
+    color: gray; /* Default color for unselected stars */
+    margin-right: 5px;
+  }
+  
+  .gold-star {
+    color: gold; /* Gold color for selected stars */
+  }
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

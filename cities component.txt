@@ -1,0 +1,323 @@
+cities.component.ts
+
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms'; 
+import { RouterModule } from '@angular/router'; // Import RouterModule
+import { CityRatingComponent } from '../city-rating/city-rating.component';
+
+interface City {
+  id: number;
+  description: string;
+  placesToSee: string[];
+  rating: number;
+  image: string;
+  category: string; // Added a category for filtering
+}
+
+@Component({
+  selector: 'app-cities',
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterModule,CityRatingComponent], // Include FormsModule here
+  templateUrl: './cities.component.html',
+  styleUrls: ['./cities.component.css'],
+})
+export class CitiesComponent implements OnInit, OnDestroy {
+  cities: City[] = [
+    
+    {
+      id: 1,
+      description: 'Paris, France',
+      placesToSee: ['Eiffel Tower', 'Louvre Museum', 'Notre-Dame Cathedral'],
+      rating: 4.8,
+      image: 'https://media.staticontent.com/media/pictures/01512cb2-8e58-47ca-addf-c8aadbfcde82',
+      category: 'Cultural',
+    },
+    {
+      id: 2,
+      description: 'New York, USA',
+      placesToSee: ['Statue of Liberty', 'Central Park', 'Times Square'],
+      rating: 4.7,
+      image: 'https://wallup.net/wp-content/uploads/2017/03/28/447930-cityscape-sunset-Empire_State_Building-New_York_City-sky.jpg',
+      category: 'Family',
+    },
+    {
+      id: 3,
+      description: 'Tokyo, Japan',
+      placesToSee: ['Shinjuku Gyoen', 'Senso-ji Temple', 'Tokyo Tower'],
+      rating: 4.9,
+      image: 'https://loving-tokyo.com/en/wp-content/uploads/2019/05/tokyo-attractions-190521134419001-1600x800.jpg',
+      category: 'Cultural',
+    },
+    {
+      id: 4,
+      description: 'Sydney, Australia',
+      placesToSee: ['Sydney Opera House', 'Bondi Beach', 'Harbour Bridge'],
+      rating: 4.6,
+      image: 'https://s3-ap-southeast-2.amazonaws.com/cdn.wayfarer.travel/wp-content/uploads/2017/10/03103434/Sydney-category-lead.jpg',
+      category: 'Adventure',
+    },
+    {
+      id: 5,
+      description: 'Rome, Italy',
+      placesToSee: ['Colosseum', 'Vatican City', 'Trevi Fountain'],
+      rating: 4.8,
+      image: 'https://s3-ap-southeast-2.amazonaws.com/cdn.wayfarer.travel/wp-content/uploads/2017/10/03103434/Sydney-category-lead.jpg',
+      category: 'Cultural',
+    },
+    {
+      id: 6,
+      description: 'Barcelona, Spain',
+      placesToSee: ['Sagrada Familia', 'Park Güell', 'Gothic Quarter'],
+      rating: 4.7,
+      image: 'https://th.bing.com/th/id/R.cb166bc7094acbae570d59c08bead336?rik=CubN9a4u7Pr6Lg&riu=http%3a%2f%2fgetwallpapers.com%2fwallpaper%2ffull%2f7%2f3%2f4%2f1088397-popular-barcelona-city-wallpapers-2048x1388.jpg&ehk=BBnhi%2bWTNxRYcY%2fVqJNML86pMn4Li8bQL1nD%2bW93HzI%3d&risl=&pid=ImgRaw&r=0',
+      category: 'Cultural',
+    },
+    {
+      id: 7,
+      description: 'Istanbul, Turkey',
+      placesToSee: ['Hagia Sophia', 'Topkapi Palace', 'Grand Bazaar'],
+      rating: 4.5,
+      image: 'https://www.starholidays.ro/wp-content/uploads/2019/02/istanbul.jpg',
+      category: 'Heritage',
+    },
+    {
+      id: 8,
+      description: 'Dubai, UAE',
+      placesToSee: ['Burj Khalifa', 'Dubai Mall', 'Palm Jumeirah'],
+      rating: 4.6,
+      image: 'https://th.bing.com/th/id/R.3e0f00763307e90aeb372cf2d2a4e520?rik=HecTVFGKZ4NVgQ&riu=http%3a%2f%2fuaecentral.com%2fwp-content%2fuploads%2f2020%2f02%2fDubai-Fountain.jpg&ehk=Wz0zJbKV0TsAxGDcldI9L43ESIbSRpn1g41geDvl7gI%3d&risl=&pid=ImgRaw&r=0',
+      category: 'Adventure',
+    },
+    {
+      id: 9,
+      description: 'Cairo, Egypt',
+      placesToSee: ['Pyramids of Giza', 'Sphinx', 'Egyptian Museum'],
+      rating: 4.4,
+      image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Cairo_From_Tower_(cropped).jpg/640px-Cairo_From_Tower_(cropped).jpg',
+      category: 'Heritage',
+    }
+  ];
+
+  filteredCities: City[] = [];
+  selectedFilter: string = 'All';
+  showImage: boolean[] = [];
+  searchTerm: string = ''; 
+
+  constructor() {
+    this.showImage = this.cities.map(() => false);
+  }
+
+  ngOnInit(): void {
+    console.log('CitiesComponent Initialized');
+    this.filteredCities = this.filterCities();
+  }
+
+  ngOnDestroy(): void {
+    console.log('CitiesComponent Destroyed');
+  }
+
+  toggleImage(index: number): void {
+    this.showImage[index] = !this.showImage[index];
+  }
+
+  updateFilter(event: Event): void {
+    const target = event.target as HTMLSelectElement; // Type assertion
+    this.selectedFilter = target?.value || 'All'; // Optional chaining with default
+    this.filteredCities = this.filterCities();
+  }
+
+ 
+  onSearchChange(): void {
+    this.filteredCities = this.filterCities();
+  }
+
+  filterCities(): City[] {
+    const filteredByCategory = this.selectedFilter === 'All'
+      ? this.cities
+      : this.cities.filter(city => city.category === this.selectedFilter);
+      
+    return filteredByCategory.filter(city => 
+      city.description.toLowerCase().includes(this.searchTerm.toLowerCase())
+    );
+  }
+  onRatingClicked(message: string): void {
+    alert(message); // Display the clicked rating in a popup
+  }
+}
+
+
+_____________________________________________________________________________
+
+
+cities.component.html
+
+
+  
+   <div class="container mt-5">
+    <h1 class="text-center">Travel Destinations</h1>
+  
+    <input
+      type="text"
+      placeholder="Search by city name"
+      [(ngModel)]="searchTerm"
+      (input)="onSearchChange()"
+      class="form-control"
+    />
+  
+    <select class="form-select mt-3" (change)="updateFilter($event)">
+      <option value="All">All</option>
+      <option value="Cultural">Cultural</option>
+      <option value="Heritage">Heritage</option>
+      <option value="Adventure">Adventure</option>
+      <option value="Family">Family</option>
+    </select>
+  
+    <div class="row mt-4">
+      <div class="col-md-4" *ngFor="let city of filteredCities; let i = index">
+        <div class="card mb-4">
+          <img
+            [src]="city.image"
+            class="card-img-top"
+            [alt]="city.description"
+            *ngIf="showImage[i]"
+          />
+          <div class="card-body">
+            <h5 class="card-title">{{ city.description }}</h5>
+            <p class="card-text">Rating: {{ city.rating }}</p>
+            <ul>
+              <li *ngFor="let place of city.placesToSee">{{ place }}</li>
+            </ul>
+            <app-city-rating [rating]="city.rating"
+            (ratingClicked)="onRatingClicked($event)"></app-city-rating> <!-- Inserted city-rating component -->
+            <button class="btn btn-primary" (click)="toggleImage(i)">
+              {{ showImage[i] ? 'Hide Image' : 'Show Image' }}
+            </button>
+            <button
+              class="btn btn-info mt-2"
+              [routerLink]="['/travel-details', city.id]"
+            >
+              More Details
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+______________________________________________________________________________
+
+
+cities.component.css
+
+
+/* Global container styling */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  /* Header styling */
+  h1 {
+    font-family: 'Arial', sans-serif;
+    color: black;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: bold;
+  }
+  
+  /* Card layout adjustments */
+  .card {
+    transition: transform 0.3s, box-shadow 0.3s;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Image styling */
+  .card-img-top {
+    max-height: 200px;
+    object-fit: cover;
+    cursor: pointer;
+    border-radius: 10px 10px 0 0;
+  }
+  
+  /* Card body spacing */
+  .card-body {
+    padding: 15px;
+    text-align: center;
+  }
+  
+  .card-title {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: #007bff;
+  }
+  
+  /* List of places to see */
+  .card-text ul {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+  }
+  
+  .card-text ul li {
+    background: #f8f9fa;
+    margin: 5px 0;
+    padding: 8px;
+    border-radius: 5px;
+  }
+  
+  /* Button styling */
+  button {
+    margin-top: 10px;
+    width: 100%;
+    border-radius: 25px;
+    background-color: #007bff;
+    border: none;
+    color: #fff;
+    padding: 10px;
+    transition: background-color 0.3s;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Dropdown styling */
+  .form-select {
+    max-width: 300px;
+    margin: 0 auto;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  /* Responsive layout */
+  @media (max-width: 768px) {
+    .card {
+      margin-bottom: 20px;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .card-title {
+      font-size: 1.25rem;
+    }
+  
+    button {
+      padding: 8px;
+    }
+  }
+  
+
+
+
+
+
